@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.core.mapper.mysql.HomeMapper">
+    <select id="selectSysdate" resultType="String">
+        SELECT SYSDATE()
+    </select>
+    
+    <insert id="insertTest">
+        INSERT INTO TBL_TEST VALUES()
+    </insert>
+    
+    <select id="selectUsers" resultType="com.example.demo.core.model.Person">
+        SELECT * FROM TBL_USER
+    </select>
+</mapper>

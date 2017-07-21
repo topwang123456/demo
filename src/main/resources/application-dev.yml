@@ -1,0 +1,55 @@
+server:
+  port: 8080
+  
+key:
+  name: cleverfan
+  sex: man
+
+log:
+  appender: CONSOLE
+  level: DEBUG
+  path: /home/ap/demo/logs
+  name: demo
+  history: 1
+  
+spring:
+  redis:
+#    cluster:
+#      nodes:
+#      - 192.168.2.20:7000
+#      - 192.168.2.20:7001
+#      - 192.168.2.20:7002
+#      - 192.168.2.26:7000
+#      - 192.168.2.26:7001
+#      - 192.168.2.26:7002
+#    password: Justsy123
+    host: 127.0.0.1
+    port: 6379
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+    timeout: 60000
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    first:
+      name: army
+      url:  jdbc:mysql://192.168.2.47:3306/db_army?autoReconnect=true&amp;failOverReadOnly=false
+      username: db_chmdm_justsy
+      password: db_chmdm_justsy
+      driver-class-name: com.mysql.jdbc.Driver
+      initialSize: 2
+      maxActive: 20
+      maxWait: 60000
+      validationQuery: select 1 from dual 
+    secondary:
+      name: orcl
+      url:  jdbc:oracle:thin:@192.168.2.188:1521:ORCL
+      username: accounts
+      password: Justsy123
+      driver-class-name: oracle.jdbc.OracleDriver
+      initialSize: 2
+      maxActive: 20
+      maxWait: 60000
+      validationQuery: select 1 from dual

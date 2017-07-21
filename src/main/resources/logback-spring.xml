@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="300 seconds" debug="false">
+    <!-- Log文件的定义 -->
+    <springProperty scope="context" name="LOG_APPENDER" source="log.appender"/>
+    <!-- Log的执行级别：TRACE < DEBUG < INFO < WARN < ERROR -->
+    <springProperty scope="context" name="LOG_LEVEL" source="log.level"/>
+    <!-- Lon文件保存位置 -->
+    <springProperty scope="context" name="LOG_PATH" source="log.path"/>
+    <!-- Log文件名 -->
+    <springProperty scope="context" name="LOG_NAME" source="log.name"/>
+    <!-- Log文件保留天数 -->
+    <springProperty scope="context" name="MAX_HISTORY" source="log.history"/>
+    <!-- Log输出格式 -->
+    <property name="LOG_PATTERN" value="[%-5level] %d{HH:mm:ss.SSS} %logger{15} : %msg%n" />
+    <contextName>DEMO</contextName>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${LOG_PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <!-- LOG WEB -->
+    <appender name="LOG_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日志记录器，日期滚动记录 -->
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_PATH}/${LOG_NAME}.log</file>
+
+        <!-- 日志记录器的滚动策略，按日期 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+
+        <!-- 日志文件的格式 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 文件重命名 -->
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <discriminator>
+            <key>siftKey</key>
+            <defaultValue>all</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${siftKey}" class="ch.qos.logback.core.FileAppender">
+                <file>${LOG_PATH}/${siftKey}</file>
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <pattern>%msg%n</pattern>
+                </layout>
+            </appender>
+        </sift>
+    </appender>
+    <!-- 缓存日志输出 -->
+    <appender name="SIFT_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>10000</queueSize>
+        <appender-ref ref="SIFT" />
+    </appender>
+    <logger additivity="false" name="com.startboot.ext.common.LogUtils" level="INFO">
+        <appender-ref ref="SIFT_ASYNC" />
+    </logger>
+    <!-- 为不同包下的所有类指定Appender -->
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.mybatis.spring" level="WARN" />
+    <logger name="org.apache" level="WARN" />
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="${LOG_APPENDER}" />
+    </root>
+</configuration>
